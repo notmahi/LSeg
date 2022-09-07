@@ -34,10 +34,10 @@ class LSegModule(LSegmentationModule):
             self.crop_size = 480
 
         use_pretrained = True
-        norm_mean= [0.5, 0.5, 0.5]
+        norm_mean = [0.5, 0.5, 0.5]
         norm_std = [0.5, 0.5, 0.5]
 
-        print('** Use norm {}, {} as the mean and std **'.format(norm_mean, norm_std))
+        print("** Use norm {}, {} as the mean and std **".format(norm_mean, norm_std))
 
         train_transform = [
             transforms.ToTensor(),
@@ -52,26 +52,26 @@ class LSegModule(LSegmentationModule):
         self.train_transform = transforms.Compose(train_transform)
         self.val_transform = transforms.Compose(val_transform)
 
-        self.trainset = self.get_trainset(
-            dataset,
-            augment=kwargs["augment"],
-            base_size=self.base_size,
-            crop_size=self.crop_size,
-        )
-        
-        self.valset = self.get_valset(
-            dataset,
-            augment=kwargs["augment"],
-            base_size=self.base_size,
-            crop_size=self.crop_size,
-        )
+        # self.trainset = self.get_trainset(
+        #     dataset,
+        #     augment=kwargs["augment"],
+        #     base_size=self.base_size,
+        #     crop_size=self.crop_size,
+        # )
+
+        # self.valset = self.get_valset(
+        #     dataset,
+        #     augment=kwargs["augment"],
+        #     base_size=self.base_size,
+        #     crop_size=self.crop_size,
+        # )
 
         use_batchnorm = (
             (not kwargs["no_batchnorm"]) if "no_batchnorm" in kwargs else True
         )
         # print(kwargs)
 
-        labels = self.get_labels('ade20k')
+        labels = self.get_labels("ade20k")
 
         self.net = LSegNet(
             labels=labels,
@@ -91,23 +91,25 @@ class LSegModule(LSegmentationModule):
         self._up_kwargs = up_kwargs
         self.mean = norm_mean
         self.std = norm_std
+        self.num_classes = 2
 
         self.criterion = self.get_criterion(**kwargs)
 
     def get_labels(self, dataset):
         labels = []
-        path = 'label_files/{}_objectInfo150.txt'.format(dataset)
-        assert os.path.exists(path), '*** Error : {} not exist !!!'.format(path)
-        f = open(path, 'r') 
-        lines = f.readlines()      
-        for line in lines: 
-            label = line.strip().split(',')[-1].split(';')[0]
+        path = "/private/home/notmahi/code/geometric_database/lang-seg/label_files/{}_objectInfo150.txt".format(
+            dataset
+        )
+        assert os.path.exists(path), "*** Error : {} not exist !!!".format(path)
+        f = open(path, "r")
+        lines = f.readlines()
+        for line in lines:
+            label = line.strip().split(",")[-1].split(";")[0]
             labels.append(label)
         f.close()
-        if dataset in ['ade20k']:
+        if dataset in ["ade20k"]:
             labels = labels[1:]
         return labels
-
 
     @staticmethod
     def add_model_specific_args(parent_parser):
@@ -175,7 +177,7 @@ class LSegModule(LSegmentationModule):
 
         parser.add_argument(
             "--activation",
-            choices=['lrelu', 'tanh'],
+            choices=["lrelu", "tanh"],
             default="lrelu",
             help="use which activation to activate the block",
         )
