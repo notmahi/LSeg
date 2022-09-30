@@ -1,3 +1,4 @@
+from pathlib import Path
 import re
 import torch
 import torch.nn as nn
@@ -97,7 +98,7 @@ class LSegModule(LSegmentationModule):
 
     def get_labels(self, dataset):
         labels = []
-        path = "/private/home/notmahi/code/geometric_database/lang-seg/label_files/{}_objectInfo150.txt".format(
+        path = Path(__file__).parent / "../label_files/{}_objectInfo150.txt".format(
             dataset
         )
         assert os.path.exists(path), "*** Error : {} not exist !!!".format(path)
